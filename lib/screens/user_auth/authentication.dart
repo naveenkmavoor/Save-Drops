@@ -1,6 +1,5 @@
-import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
+import 'package:flutter/material.dart'; 
 import 'package:sed/models/auth.dart';
 import 'package:sed/models/main.dart';
 import 'dart:ui';
