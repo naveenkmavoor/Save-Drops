@@ -1,12 +1,14 @@
 import 'dart:ui';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sed/models/main.dart';
-import 'package:sed/screens/homepage/down_part.dart';   
+import 'package:sed/screens/homepage/down_part.dart';
 import 'package:sed/screens/user_edit/userprofile.dart';
 import 'package:sed/ui_widgets/logout.dart';
 import 'package:sed/ui_widgets/usage_stastics.dart';
@@ -19,28 +21,32 @@ class Redirect extends StatefulWidget {
 }
 
 class _HomeState extends State<Redirect> {
+  MainModel model;
   final drawerScrimColor = Color.fromARGB(90, 100, 100, 128);
   final double drawerEdgeDragWidth = null;
-
   String _homeScreenText;
+
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final DragStartBehavior drawerDragStartBehavior = DragStartBehavior.start;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int _currentindex = 0;
+  int tankCapacity = 0;
+  DatabaseReference capacityDatabase;
 
   void _showItemDialog(message) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            backgroundColor: Colors.black,
             actions: <Widget>[
               FlatButton(
-                child: Text('Goto usage statistics'),
+                child: Text('Ok'),
                 onPressed: () {
                   Navigator.pop(context);
-                  setState(() {
-                    _currentindex = 1;
-                  });
+                  // setState(() {
+                  //   _currentindex = 1;
+                  // });
                 },
               )
             ],
@@ -54,6 +60,10 @@ class _HomeState extends State<Redirect> {
 
   @override
   void initState() {
+    model = widget.model;
+    capacityDatabase = widget.model.firebaseinstace.child('waterTankCapacity');
+
+    //Setting fcm to handle notification
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         _showItemDialog(message);
@@ -61,7 +71,7 @@ class _HomeState extends State<Redirect> {
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
-      }, 
+      },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
       },
@@ -69,19 +79,75 @@ class _HomeState extends State<Redirect> {
 
     _firebaseMessaging.getToken().then((String token) {
       assert(token != null);
-      setState(() {
-        _homeScreenText = "Push Messaging token: $token";
-      });
+
+      _homeScreenText = "Push Messaging token: $token";
+
       print(_homeScreenText);
     });
+
+    // Checking whether tank capacity is initialized else popup alert dialog box
+    capacityDatabase.once().then((DataSnapshot snapshot) {
+      if (snapshot.value == null || snapshot.value == 0) showAlert(context);
+    }, onError: (Object o) {
+      final DatabaseError error = o;
+      print(error);
+    });
+
     super.initState();
+    print('initstate');
+  }
+
+  void showAlert(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.black,
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _updateWaterCapacity();
+                },
+                child: Text("Let's go"),
+              )
+            ],
+            title: Text('Hello there :)'),
+            content: TextFormField(
+              inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+              onChanged: (String value) {
+                tankCapacity = int.parse(value);
+              },
+              textAlign: TextAlign.center,
+              cursorColor: Colors.white,
+              cursorRadius: Radius.circular(34),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                  labelText: 'Enter tank volume in Litres',
+                  labelStyle: TextStyle(fontSize: 18),
+                  border: InputBorder.none),
+            ),
+          );
+        });
+  }
+
+  void _updateWaterCapacity() async {
+    final TransactionResult transactionResult =
+        await capacityDatabase.runTransaction((MutableData mutableData) async {
+      print('transaction done ${mutableData.value}');
+      mutableData.value = tankCapacity;
+      return mutableData;
+    });
+    if (transactionResult.committed) {
+      print('data pushed successfully');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: _drawer(widget.model),
+      drawer: _drawer(),
       backgroundColor: Colors.transparent,
       body: Stack(children: <Widget>[
         Container(
@@ -97,13 +163,13 @@ class _HomeState extends State<Redirect> {
           ),
         ),
         _currentindex == 0
-            ? DownPart(model: widget.model, scaffoldkey: _scaffoldKey)
+            ? DownPart(model: model, scaffoldkey: _scaffoldKey)
             : _currentindex == 1
                 ? Usage_Stastics(
-                    model: widget.model,
+                    model: model,
                     scaffoldKey: _scaffoldKey,
                   )
-                : UserProfile(widget.model),
+                : UserProfile(model),
         Align(
           alignment: Alignment.bottomCenter,
           child: CurvedNavigationBar(
@@ -135,7 +201,7 @@ class _HomeState extends State<Redirect> {
                       size: 20, color: Colors.white.withOpacity(0.5)),
               _currentindex == 2
                   ? Icon(
-                      FontAwesomeIcons.user,
+                      FontAwesomeIcons.userAlt,
                       size: 21,
                       color: Color(0xff1FFF00),
                     )
@@ -148,7 +214,7 @@ class _HomeState extends State<Redirect> {
     );
   }
 
-  Widget _drawer(model) => Drawer(
+  Widget _drawer() => Drawer(
         child: ClipRRect(
           child: Container(
             decoration: BoxDecoration(
@@ -182,10 +248,11 @@ class _HomeState extends State<Redirect> {
       );
 
   void _onTapTapped(int index) {
+    if (_currentindex == index) {
+      return;
+    }
     setState(() {
       _currentindex = index;
     });
   }
 }
-
-  

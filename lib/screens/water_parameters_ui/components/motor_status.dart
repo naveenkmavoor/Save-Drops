@@ -171,7 +171,7 @@ class _ShowpageState extends State<MotorStatus> {
                     child: Container(
                       height: 150,
                       child: FlareActor(
-                        "assets/New File 7.flr",
+                        "assets/switch.flr",
                         fit: BoxFit.contain,
                         animation: _animate,
                       ),
@@ -224,7 +224,7 @@ class _ShowpageState extends State<MotorStatus> {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
+          return AlertDialog(backgroundColor: Colors.black,
             title: Text('We got you covered :)'),
             content: Text('Motor will shutdown automatically. No worry'),
           );

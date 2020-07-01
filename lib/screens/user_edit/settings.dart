@@ -31,7 +31,7 @@ class _SettingsState extends State<Settings> {
             child: SafeArea(
               child: Material(
                 color: Colors.transparent,
-                child: Column( 
+                child: Column(
                   children: <Widget>[
                     Row(
                       children: <Widget>[
@@ -73,24 +73,25 @@ class _SettingsState extends State<Settings> {
                         ),
                       ),
                     ),
-                      InkWell(
-                        onTap: () {
-                          widget.model.updateMode = UpdateMode.Password;
-                          Navigator.pushNamed(context, '/account');
-                        },
-                        child: Container(
-                          height: 60,
-                          child: ListTile(
-                            leading: Icon(Icons.lock_outline),
-                            title: Text(
-                              'Change Password',
-                              style: TextStyle(fontWeight: FontWeight.w300),
-                            ),
+                    InkWell(
+                      onTap: () {
+                        widget.model.updateMode = UpdateMode.Password;
+                        Navigator.pushNamed(context, '/account');
+                      },
+                      child: Container(
+                        height: 60,
+                        child: ListTile(
+                          leading: Icon(Icons.lock_outline),
+                          title: Text(
+                            'Update password',
+                            style: TextStyle(fontWeight: FontWeight.w300),
                           ),
                         ),
                       ),
-                       InkWell(
-                      onTap: () {  
+                    ),
+                    InkWell(
+                      onTap: () {
+                        _showAlert();
                       },
                       child: Container(
                         height: 60,
@@ -109,5 +110,29 @@ class _SettingsState extends State<Settings> {
             ),
           ),
         ));
+  }
+
+  void _showAlert() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(backgroundColor: Colors.black,
+            title: Text('Are you sure you want to clear history?'),
+            content:
+                Text('Clearing history will permanently erase all your data.'),
+            actions: <Widget>[
+              FlatButton(
+                  child: Text('Yes'),
+                  onPressed: () {
+                    widget.model.removeFromDatabase();
+                    Navigator.pop(context);
+                  }),
+              FlatButton(
+                child: Text('No'),
+                onPressed: () => Navigator.pop(context),
+              )
+            ],
+          );
+        });
   }
 }

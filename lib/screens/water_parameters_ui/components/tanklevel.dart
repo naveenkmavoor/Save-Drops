@@ -7,7 +7,7 @@ import 'package:sed/ui_widgets/circle_progress.dart';
 import '../../../models/main.dart';
 
 class TankLevel extends StatefulWidget {
- final MainModel model;
+  final MainModel model;
   TankLevel(this.model);
   @override
   _TankLevelState createState() => _TankLevelState();
@@ -17,8 +17,11 @@ class _TankLevelState extends State<TankLevel>
     with SingleTickerProviderStateMixin {
   AnimationController progressController;
   Animation animation;
-  int tankHeight=0;
- int tankCapacity=0;
+  int waterlevel = 0;
+  double absolutewatervalue = 0.0;
+  int tankHeight = 0;
+  int tankCapacity = 0;
+  bool _isActive = false;
   TextStyle style = TextStyle(
       fontSize: 20,
       height: 2,
@@ -26,24 +29,52 @@ class _TankLevelState extends State<TankLevel>
       color: Colors.white.withOpacity(0.7));
   String dateData = DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
   @override
-  void initState() { 
-    widget.model.firebaseinstace.child('waterTankCapacity').once().then((DataSnapshot snapshot){
-    if(snapshot.value!= null){tankCapacity = snapshot.value;}
-    print(snapshot.value);
+  void initState() {
+    widget.model.firebaseinstace
+        .child('waterTankCapacity')
+        .once()
+        .then((DataSnapshot snapshot) {
+      if (snapshot.value != null) {
+        tankCapacity = snapshot.value;
+      }
+      print(snapshot.value);
     });
-    widget.model.firebaseinstace.child('tankHeight').once().then((DataSnapshot snapshot){
-          if(snapshot.value!= null){tankHeight = snapshot.value;}
-          print(snapshot.value);
-
+    widget.model.firebaseinstace
+        .child('tankHeight')
+        .once()
+        .then((DataSnapshot snapshot) {
+      if (snapshot.value != null) {
+        _isActive = true; // Ultrasonic sensor is active
+        tankHeight = snapshot.value;
+      }
+      setState(() {});
+      print(snapshot.value);
     });
-    progressController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
-    animation = Tween<double>(begin: 0, end: 70).animate(progressController)
-      ..addListener(() {
-        setState(() {});
-      });
+    widget.model.firebaseinstace
+        .child('waterQuantity')
+        .child('WaterlevelPercentage')
+        .once()
+        .then((DataSnapshot snapshot) {
+      if (snapshot.value != null && snapshot.value != 0) {
+        waterlevel = snapshot.value;
+        absolutewatervalue = num.parse(waterlevel.toStringAsFixed(1));
+        progressController = AnimationController(
+            vsync: this, duration: Duration(milliseconds: 1000));
+        print('waterlevel :$absolutewatervalue');
+        animation = Tween<double>(begin: 0, end: absolutewatervalue)
+            .animate(progressController)
+              ..addListener(() {
+                setState(() {
+                  waterlevel < 10 || tankHeight == 0
+                      ? _isActive = false
+                      : _isActive = true;
+                });
+              });
+        print('animation value ${animation}');
+        progressController.forward();
+      }
+    });
 
-    progressController.forward();
     super.initState();
   }
 
@@ -66,11 +97,11 @@ class _TankLevelState extends State<TankLevel>
             ),
             Material(
               color: Colors.transparent,
-              child: IconButton( 
+              child: IconButton(
                 icon: Icon(
                   Icons.settings,
                 ),
-                onPressed: () => Navigator.pushNamed(context,'/settings'),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
               ),
             ),
           ],
@@ -91,15 +122,14 @@ class _TankLevelState extends State<TankLevel>
                 height: 10,
                 width: 10,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Color(0xff1FFF00),
-                ),
+                    borderRadius: BorderRadius.circular(20),
+                    color: _isActive ? Color(0xff1FFF00) : Colors.red),
               ),
               SizedBox(
                 width: 10,
               ),
               Text(
-                '1 Active Sensor',
+                _isActive ? '1 Active Sensor' : 'No Active Sensor',
                 style: TextStyle(fontWeight: FontWeight.w300),
               )
             ],
@@ -160,30 +190,33 @@ class _TankLevelState extends State<TankLevel>
                     height: 50,
                   ),
                   Text('Water level present in tank( % ) ', style: style),
-                  CustomPaint(
-                    foregroundPainter: CircleProgress(animation
-                        .value), // this will add custom painter after child
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      child: GestureDetector(
-                        onTap: () {
-                          if (animation.value == 80) {
-                            progressController.reverse();
-                          } else {
-                            progressController.forward();
-                          }
-                        },
-                        child: Center(
-                          child: Text(
-                            "${animation.value.toInt()}%",
-                            style: TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.bold),
+                  waterlevel == 0.0
+                      ? Container(
+                          width: 200,
+                          height: 200,
+                          child: Center(
+                            child: Text(
+                              "$absolutewatervalue%",
+                              style: TextStyle(
+                                  fontSize: 25, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+                      : CustomPaint(
+                          foregroundPainter: CircleProgress(animation
+                              .value), // this will add custom painter after child
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            child: Center(
+                              child: Text(
+                                "$absolutewatervalue%",
+                                style: TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.bold),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
                   SizedBox(height: 40),
                   Text('last updated ${dateData}'),
                 ],

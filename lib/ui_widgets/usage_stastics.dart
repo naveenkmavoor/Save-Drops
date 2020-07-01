@@ -18,6 +18,8 @@ class Usage_Stastics extends StatefulWidget {
 final List<DataPoint<DateTime>> datevalue = [];
 final Radius radius = Radius.circular(20);
 
+double width;
+
 class _Usage_StasticsState extends State<Usage_Stastics> {
   String dateData = DateFormat('yyyy-MM-dd').format(DateTime.now());
   @override
@@ -31,12 +33,14 @@ class _Usage_StasticsState extends State<Usage_Stastics> {
       Map<dynamic, dynamic> value = snapshot.value;
 
       print('snapshot value : ${snapshot.value}');
-      value.forEach((dynamic keyname, dynamic data) {
-        DateTime tempDate = new DateFormat("yyyy-MM-dd").parse(keyname);
-        datevalue.add(DataPoint<DateTime>(xAxis: tempDate, value: data));
-        print('keyname : $keyname, value :$value');
-      });
-      if (mounted) setState(() {});
+      if (snapshot.value != null) {
+        value.forEach((dynamic keyname, dynamic data) {
+          DateTime tempDate = new DateFormat("yyyy-MM-dd").parse(keyname);
+          datevalue.add(DataPoint<DateTime>(xAxis: tempDate, value: data));
+          print('keyname : $keyname, value :$value');
+        });
+        if (mounted) setState(() {});
+      }
     });
 
     super.initState();
@@ -50,6 +54,7 @@ class _Usage_StasticsState extends State<Usage_Stastics> {
 
   @override
   Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       child: SafeArea(
         child: Column(
@@ -77,7 +82,8 @@ class _Usage_StasticsState extends State<Usage_Stastics> {
                     borderRadius: BorderRadius.circular(30),
                     child: IconButton(
                       icon: Icon(Icons.settings),
-                      onPressed: () =>Navigator.pushNamed(context, '/settings'),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/settings'),
                     ),
                   ),
                 ],
@@ -111,14 +117,14 @@ class _Usage_StasticsState extends State<Usage_Stastics> {
                 ],
               ),
             ),
-           _buildContainer(
+            _buildContainer(
               'Weekly usage',
             ),
             sample1(context),
             SizedBox(
               height: 30,
             ),
-           _buildContainer(
+            _buildContainer(
               'Monthly usage',
             ),
             sample2(context),
@@ -156,9 +162,11 @@ Widget sample1(BuildContext context) {
   final today = DateTime.now();
   return Container(
     height: 250,
+    width: width,
     decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
     child: BezierChart(
-      fromDate: DateTime(2020, 03, 01),    //actually set to last 6 days before toDate
+      fromDate:
+          DateTime(2020, 03, 01), //actually set to last 6 days before toDate
       toDate: today,
       selectedDate: today,
       bezierChartScale: BezierChartScale.WEEKLY,
@@ -189,7 +197,7 @@ Widget sample2(BuildContext context) {
   return Container(
     decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
     height: 250,
-    width: MediaQuery.of(context).size.width,
+    width: width,
     child: BezierChart(
       fromDate: DateTime(2019, 09, 22),
       toDate: today,
@@ -221,7 +229,7 @@ Widget sample3(BuildContext context) {
   final today = DateTime.now();
   return Container(
     height: 250,
-    width: MediaQuery.of(context).size.width,
+    width: width,
     child: BezierChart(
       fromDate: DateTime(2018, 10, 19),
       toDate: today,

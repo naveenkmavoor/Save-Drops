@@ -22,7 +22,7 @@ class CircleProgress extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     Offset center = Offset(size.width / 2, size.height / 2);
-    double radius = min(size.width / 4, size.height / 4) - 10;
+    double radius = min(size.width / 3, size.height / 3) - 10;
 
     canvas.drawCircle(
         center, radius, outerCircle); // this draws main outer circle
@@ -34,8 +34,7 @@ class CircleProgress extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
+  bool shouldRepaint(CustomPainter oldDelegate) { 
     return true;
   }
 }

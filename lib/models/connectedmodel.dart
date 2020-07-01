@@ -18,12 +18,11 @@ class ConnectedModel extends Model {
 
 class WatervalModel extends ConnectedModel {
   int parameters;
-  DatabaseReference firebaseinstace;
+
   Map<String, dynamic> waterConsumed = {
     'todayprice': 0.0,
     'thismonthprice': 0.0
   };
- 
 }
 
 class UtilityModel extends ConnectedModel {
@@ -37,13 +36,9 @@ class UserModel extends ConnectedModel {
   bool verificationlinksend = false;
   String email;
   UpdateMode updateMode;
+  DatabaseReference firebaseinstace;
   PublishSubject<bool> _userSubject = PublishSubject();
   Timer _authTimer;
-  PublishSubject<bool> _alertConnection = PublishSubject();
-
-  PublishSubject<bool> get alertConnection {
-    return _alertConnection;
-  }
 
   PublishSubject<bool> get userSubject {
     return _userSubject;
@@ -203,7 +198,7 @@ class UserModel extends ConnectedModel {
       final String userEmail = preferences.getString('userEmail');
       final String userId = preferences.getString('userId');
       uname = preferences.getString('username');
-      print(uname);
+      print('auto username : $uname');
       _authUser = User(
         email: userEmail,
         token: token,
@@ -262,10 +257,11 @@ class UserModel extends ConnectedModel {
 
   Future<Map<String, dynamic>> updateUserData(String username, String email,
       [String photoUrl = null]) async {
+    _isLoading = true;
+    notifyListeners();
     http.Response response;
     Map<String, dynamic> responseValue = {
-      'success': false,
-      'message': 'Oops something goes wrong.'
+      'message': 'Failed to update credentials.'
     };
     Map<String, dynamic> updateemail = {
       'idToken': _authUser.token,
@@ -279,79 +275,108 @@ class UserModel extends ConnectedModel {
       'returnSecureToken': true
     };
     try {
+      //Updating userprofile
       response = await http
           .post(
               'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCATpo1Jvz5cKGoVF7pR9xy-Pz2BuS-8T0',
-              body: convert.json.encode(updateemail))
-          .timeout(Duration(seconds: timeout));
-      updateemail = convert.json.decode(response.body);
-      print(updateemail);
-      if (response.statusCode != 200) return responseValue;
-      response = await http
-          .post(
-              'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCATpo1Jvz5cKGoVF7pR9xy-Pz2BuS-8T0',
+              headers: {'Content-type': 'application/json'},
               body: convert.json.encode(uservalue))
           .timeout(Duration(seconds: timeout));
 
-      if (response.statusCode != 200) return responseValue;
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responsevalue = convert.json.decode(response.body);
+        print('user profile : $responsevalue');
 
-      Map<String, dynamic> responsevalue = convert.json.decode(response.body);
-      print(responsevalue);
+        uname = responsevalue['providerUserInfo'][0]['displayName'];
+        print(uname);
 
-      final SharedPreferences preferences =
-          await SharedPreferences.getInstance();
-      uname = responsevalue[0]['displayName'];
-      preferences.setString('username', uname);
-      return {'success': true, 'message': 'Update success'};
+        //Updating user email address
+        response = await http
+            .post(
+                'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCATpo1Jvz5cKGoVF7pR9xy-Pz2BuS-8T0',
+                headers: {'Content-type': 'application/json'},
+                body: convert.json.encode(updateemail))
+            .timeout(Duration(seconds: timeout));
+        updateemail = convert.json.decode(response.body);
+        print('updateEmail $updateemail');
+        if (response.statusCode != 200) {
+          _isLoading = false;
+          notifyListeners();
+          return {
+            'message':
+                'User name updated successfully :). Failed to update email :( try again!'
+          };
+        }
+        responseValue = {'message': 'Updated successfully :)'};
+        logout();
+      }
     } catch (e) {
       print(e);
     }
+    _isLoading = false;
+    notifyListeners();
     return responseValue;
   }
 
-  Future<Map<String, dynamic>> updatePassword(
-    String password,
+  Future<Map<String, dynamic>> updatePassword( 
     String newpassword,
   ) async {
+    _isLoading = true;
+    notifyListeners();
     http.Response response;
     Map<String, dynamic> responseValue = {
-      'success': false,
-      'message': 'Oops something goes wrong.'
+      'message': 'Failed to update password.'
     };
-    Map<String, dynamic> updateemail = {
+    Map<String, dynamic> updatepassword = {
       'idToken': _authUser.token,
-      'email': email,
+      'password': newpassword,
       'returnSecureToken': true
     };
-    Map<String, dynamic> uservalue = {
-      'idToken': _authUser.token,
-      'returnSecureToken': true
-    };
+
     try {
       response = await http
           .post(
               'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCATpo1Jvz5cKGoVF7pR9xy-Pz2BuS-8T0',
-              body: convert.json.encode(updateemail))
+              headers: {'Content-type': 'application/json'},
+              body: convert.json.encode(updatepassword))
           .timeout(Duration(seconds: timeout));
-      updateemail = convert.json.decode(response.body);
-      print(updateemail);
-      if (response.statusCode != 200) return responseValue;
-      response = await http
-          .post(
-              'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCATpo1Jvz5cKGoVF7pR9xy-Pz2BuS-8T0',
-              body: convert.json.encode(uservalue))
-          .timeout(Duration(seconds: timeout));
-      if (response.statusCode != 200) return responseValue;
-      Map<String, dynamic> responsevalue = convert.json.decode(response.body);
-
-      final SharedPreferences preferences =
-          await SharedPreferences.getInstance();
-      uname = responsevalue[0]['displayName'];
-      preferences.setString('username', uname);
-
-      return {'success': true, 'message': 'Update success'};
+      updatepassword = convert.json.decode(response.body);
+      print('updated password: $updatepassword');
+      if (response.statusCode == 200) {
+        responseValue = {'message': 'Password updated successfully :)'};
+        logout();
+      }
     } catch (e) {
       print(e);
+    }
+    _isLoading = false;
+    notifyListeners();
+    return responseValue;
+  }
+
+  void removeFromDatabase() {
+    firebaseinstace.remove();
+  }
+
+  Future<bool> deleteAccount() async {
+    Map tokenvalue = {'idToken': _authUser.token};
+    try {
+      http.Response response = await http
+          .post(
+              'https://identitytoolkit.googleapis.com/v1/accounts:delete?key=AIzaSyCATpo1Jvz5cKGoVF7pR9xy-Pz2BuS-8T0',
+              headers: {'Content-type': 'application/json'},
+              body: convert.json.encode(tokenvalue))
+          .timeout(Duration(seconds: timeout));
+
+      print(response.body);
+      if (response.statusCode == 200) {
+        logout();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('exeception');
+      return false;
     }
   }
 }

@@ -34,22 +34,24 @@ class _WaterBillState extends State<WaterBill> {
     _usageStatics.once().then((database.DataSnapshot snapshot) {
       Map<dynamic, dynamic> value = snapshot.value;
       double bill;
-      value.forEach((dynamic keyname, dynamic data) {
-        DateTime tempDate = new DateFormat("yyyy-MM").parse(keyname);
-        if (formatDate(tempDate, [yyyy, '-', mm]) == dateData)
-          thismonth = thismonth + value[keyname];
-        bill = (data / 1000) *
-            6; // calculating bill for each day , assuming 1000L costs 6 rs in india.
-        datevalue.add(DataPoint<DateTime>(
-            xAxis: tempDate, value: num.parse(bill.toStringAsFixed(2))));
-        print('keyname : $tempDate, value :$bill');
-      });
-      if (mounted)
-        setState(() {
-          _model.waterConsumed['thismonthprice'] = (thismonth / 1000) * 6;
-          _model.waterConsumed['thismonthprice'] = num.parse(
-              _model.waterConsumed['thismonthprice'].toStringAsFixed(2));
+      if (value != null) {
+        value.forEach((dynamic keyname, dynamic data) {
+          DateTime tempDate = new DateFormat("yyyy-MM").parse(keyname);
+          if (formatDate(tempDate, [yyyy, '-', mm]) == dateData)
+            thismonth = thismonth + value[keyname];
+          bill = (data / 1000) *
+              6; // calculating bill for each day , assuming 1000L costs 6 rs in india.
+          datevalue.add(DataPoint<DateTime>(
+              xAxis: tempDate, value: num.parse(bill.toStringAsFixed(2))));
+          print('keyname : $tempDate, value :$bill');
         });
+        if (mounted)
+          setState(() {
+            _model.waterConsumed['thismonthprice'] = (thismonth / 1000) * 6;
+            _model.waterConsumed['thismonthprice'] = num.parse(
+                _model.waterConsumed['thismonthprice'].toStringAsFixed(2));
+          });
+      }
     });
 
     print('thismonth : $thismonth');
@@ -72,29 +74,30 @@ class _WaterBillState extends State<WaterBill> {
           children: <Widget>[
             Material(
               color: Colors.transparent,
-              child: IconButton( 
+              child: IconButton(
                 icon: Icon(
                   FontAwesomeIcons.arrowLeft,
                 ),
-                onPressed: () =>Navigator.pop(context),
+                onPressed: () => Navigator.pop(context),
               ),
             ),
             Material(
               color: Colors.transparent,
-              child: IconButton( 
+              child: IconButton(
                 icon: Icon(
                   Icons.settings,
                 ),
-                onPressed: () =>Navigator.pushNamed(context, '/settings'),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
               ),
             ),
           ],
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 20.0, bottom: 8),
+            padding: const EdgeInsets.only(left: 20.0, bottom: 8),
             child: Text(
               'Water Bill',
-              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 30,height: 2),
+              style: TextStyle(
+                  fontWeight: FontWeight.w300, fontSize: 30, height: 2),
             )),
         Padding(
           padding: const EdgeInsets.only(left: 20.0, top: 5),
@@ -119,16 +122,20 @@ class _WaterBillState extends State<WaterBill> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
-          child: Wrap(alignment: WrapAlignment.center,
-            runSpacing: 10,
-            spacing: 10,
-            crossAxisAlignment: WrapCrossAlignment.center,
+          padding: const EdgeInsets.only(top:40,bottom: 20 ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _buildContainer('Today Consumed', 'assets/rupee.svg',
-                  _model.waterConsumed['todayprice']),
-              _buildContainer('This month Consumed', 'assets/rupee.svg',
-                  _model.waterConsumed['thismonthprice']),
+              Wrap(
+                runSpacing: 10,
+                spacing: 10,
+                children: <Widget>[
+                  _buildContainer('Today Consumed', 'assets/rupee.svg',
+                      _model.waterConsumed['todayprice']),
+                  _buildContainer('This month Consumed', 'assets/rupee.svg',
+                      _model.waterConsumed['thismonthprice']),
+                ],
+              ),
             ],
           ),
         ),

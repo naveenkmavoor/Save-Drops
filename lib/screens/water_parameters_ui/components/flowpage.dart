@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -16,26 +17,38 @@ class Flowpage extends StatefulWidget {
 List<DataPoint<DateTime>> datevalue = [];
 
 class _SubpageState extends State<Flowpage> {
-  final today = DateTime.now();
+  String dateData = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  StreamSubscription<Event> _flowSubscription;
+  double oldValue = 0.0, newValue = 0.0;
+  String flowvalue = '0.0';
+  bool _isActive = false;
   @override
   void initState() {
-    DatabaseReference databaseReference = FirebaseDatabase.instance
-        .reference()
-        .child('users')
-        .child('${widget.model.user.userid}')
-        .child('flowSensorValue');
-    databaseReference.once().then((DataSnapshot snapshot) {
-      Map<dynamic, dynamic> value = snapshot.value;
+    DatabaseReference databaseReference = widget.model.firebaseinstace
+        .child('flowSensorValue')
+        .child('$dateData');
+    _flowSubscription = databaseReference.onValue.listen((Event event) {
+      print(event.snapshot.value);
 
-      print('snapshot value : ${snapshot.value}');
-      value.forEach((dynamic keyname, dynamic data) {
-        DateTime tempDate = new DateFormat("yyyy-MM-dd").parse(keyname);
-        datevalue.add(DataPoint<DateTime>(xAxis: tempDate, value: data));
-        print('keyname : $keyname, value :$data');
-      });
-      setState(() {});
+      //Determining the flow rate of water in L/sec through the pipe
+      if (event.snapshot.value != null) {
+        if (oldValue > event.snapshot.value) oldValue = 0.0;
+        newValue = event.snapshot.value - oldValue;
+        flowvalue = newValue.toStringAsFixed(1);
+        if (oldValue != 0.0)
+          setState(() {
+            _isActive = true; //shows flow sensor is active
+          });
+        oldValue = event.snapshot.value;
+      }
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _flowSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -48,20 +61,20 @@ class _SubpageState extends State<Flowpage> {
           children: <Widget>[
             Material(
               color: Colors.transparent,
-              child: IconButton( 
+              child: IconButton(
                 icon: Icon(
                   FontAwesomeIcons.arrowLeft,
                 ),
-                onPressed: () =>Navigator.pop(context),
+                onPressed: () => Navigator.pop(context),
               ),
             ),
             Material(
               color: Colors.transparent,
-              child: IconButton( 
+              child: IconButton(
                 icon: Icon(
                   Icons.settings,
                 ),
-                onPressed: () =>Navigator.pushNamed(context, '/settings'),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
               ),
             ),
           ],
@@ -82,26 +95,27 @@ class _SubpageState extends State<Flowpage> {
                 width: 10,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Color(0xff1FFF00),
+                  color: _isActive ? Color(0xff1FFF00) : Colors.red,
                 ),
               ),
               SizedBox(
                 width: 10,
               ),
-              Text('Healthy')
+              Text(_isActive ? 'Active' : 'Inactive')
             ],
           ),
         ),
         Center(
-          child: Container( 
+          child: Container(
             decoration: BoxDecoration(
                 color: Colors.black, borderRadius: BorderRadius.circular(20)),
             height: 100,
             width: 300,
-            child: Column(mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  '1.2 L/s',
+                  '$flowvalue L/s',
                   style: TextStyle(
                     fontSize: 30,
                   ),

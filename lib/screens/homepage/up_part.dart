@@ -25,24 +25,24 @@ class _ColumnWidgetState extends State<UpPart> {
   DatabaseReference _consumed;
   StreamSubscription<Event> _levelSubscription;
   StreamSubscription<Event> _consumedSubscription;
-  double waterlevelL = 0.0;
+  int waterlevelL = 0;
+  bool _isDetected = false;
   double consumed = 0.0;
   String dateformat = DateFormat('yyyy-MM-dd').format(DateTime.now());
   @override
   void initState() {
-    DatabaseReference _firebaseinstace = FirebaseDatabase.instance
-        .reference()
-        .child('users')
-        .child('${widget.model.user.userid}');
+    DatabaseReference _firebaseinstace = widget.model.firebaseinstace;
     _consumed = _firebaseinstace.child('flowSensorValue').child(dateformat);
     _level =
         _firebaseinstace.child('waterQuantity').child('WaterlevelPercentage');
     _level.keepSynced(true);
 
     _levelSubscription = _level.onValue.listen((Event event) {
-      print('flow Rate : ${event.snapshot.value}');
+      print('waterlevel percentage : ${event.snapshot.value}');
       print('executed');
-      if (event.snapshot.value != null) waterlevelL = event.snapshot.value;
+      if (event.snapshot.value != null && event.snapshot.value != 0) {
+        waterlevelL = event.snapshot.value;
+      }
     }, onError: (Object o) {
       final DatabaseError error = o;
       print(error);
@@ -50,14 +50,16 @@ class _ColumnWidgetState extends State<UpPart> {
 
     _consumedSubscription = _consumed.onValue.listen((Event event) {
       print('total water consumes per day : ${event.snapshot.value}');
-      setState(() {
-        if (event.snapshot.value != null) {
-          consumed = event.snapshot.value;
-          double convertedvalue = (consumed / 1000) * 6; // 6rs for 1kL
-          widget.model.waterConsumed['todayprice'] =
-              num.parse(convertedvalue.toStringAsFixed(2));
-        }
-      });
+
+      if (event.snapshot.value != null) {
+        consumed = event.snapshot.value;
+        double convertedvalue = (consumed / 1000) * 6; // 6rs for 1kL
+        widget.model.waterConsumed['todayprice'] =
+            num.parse(convertedvalue.toStringAsFixed(2));
+        setState(() {
+          _isDetected = true;
+        });
+      }
     }, onError: (Object o) {
       final DatabaseError error = o;
       setState(() {
@@ -76,52 +78,57 @@ class _ColumnWidgetState extends State<UpPart> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Material(
-                color: Colors.transparent,
-                child: IconButton(
-                  icon: SvgPicture.asset(
-                    'assets/menuicons.svg', //style attribute
-                    semanticsLabel: 'Menu',
-                  ),
-                  onPressed: () {
-                    widget.scaffoldkey.currentState.openDrawer();
-                  },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Material(
+              color: Colors.transparent,
+              child: IconButton(
+                icon: SvgPicture.asset(
+                  'assets/menuicons.svg', //style attribute
+                  semanticsLabel: 'Menu',
                 ),
-              ),
-              Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(30),
-                child: IconButton(
-                  icon: Icon(Icons.settings),
-                  onPressed: () => Navigator.pushNamed(context, '/settings'),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 12.0, top: 9, bottom: 10),
-            child: Text(
-              '${widget.model.uname}',
-              style: TextStyle(
-                fontSize: 28,
+                onPressed: () {
+                  widget.scaffoldkey.currentState.openDrawer();
+                },
               ),
             ),
+            Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(30),
+              child: IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 12.0, top: 9, bottom: 10),
+          child: Text(
+            '${widget.model.uname}',
+            style: TextStyle(
+              fontSize: 28,
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 12.0, bottom: 50),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 12.0,
+            ),
             child: Text(
-              '3 Monitered Devices',
+              _isDetected ? '3 Monitoring devices' : 'No devices detected',
               style: style,
             ),
           ),
-          Row(
+        ),
+        Flexible(
+          fit: FlexFit.tight,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               SizedBox(
@@ -135,11 +142,11 @@ class _ColumnWidgetState extends State<UpPart> {
                 width: 5,
               ),
               Text(
-                waterlevelL.toStringAsFixed(1),
+                '$waterlevelL',
                 style: TextStyle(
                   fontSize: 20,
                 ),
-              ), 
+              ),
               Text(
                 '%',
                 style: TextStyle(height: -1),
@@ -192,9 +199,9 @@ class _ColumnWidgetState extends State<UpPart> {
                 width: 10,
               )
             ],
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 }

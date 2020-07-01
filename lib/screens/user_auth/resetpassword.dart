@@ -188,8 +188,7 @@ class _ResetPasswordState extends State<ResetPassword> {
   Widget _buildButton() => ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
           return model.isLoading
-              ? CircularProgressIndicator(
-                  backgroundColor: Colors.red,
+              ? CircularProgressIndicator( 
                 )
               : Material(
                   borderRadius: BorderRadius.circular(30),

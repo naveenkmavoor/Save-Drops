@@ -10,36 +10,38 @@ class DownPart extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldkey;
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          _buildContainer(context),
-          SizedBox(
-            height: 20,
-          ),
-          _buildWrap(context)
-        ],
-      ),
-    );
+      return  SingleChildScrollView(
+              child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            _buildContainer(context),
+            SizedBox(
+              height: 20,
+            ),
+            _buildWrap(context)
+          ], 
+    ),
+      );
   }
 
-  Widget _buildContainer(context) => Container(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 9),
-        child: SafeArea(
-            child: UpPart(model: model, scaffoldkey: scaffoldkey)),
-        height: MediaQuery.of(context).size.height * 0.38,
-        decoration: BoxDecoration(
-          color: Color(0xff263A54),
-          image: DecorationImage(
-              colorFilter: ColorFilter.mode(
-                  Colors.white.withOpacity(0.4), BlendMode.modulate),
-              image: AssetImage(
-                'assets/water.jpg',
-              ),
-              fit: BoxFit.fill),
-        ),
-      );
+  Widget _buildContainer(context) =>  
+       Container(
+          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 9),
+          child: SafeArea(
+              child: UpPart(model: model, scaffoldkey: scaffoldkey)),
+          height: MediaQuery.of(context).size.height * 0.38,
+          decoration: BoxDecoration(
+            color: Color(0xff263A54),
+            image: DecorationImage(
+                colorFilter: ColorFilter.mode(
+                    Colors.white.withOpacity(0.4), BlendMode.modulate),
+                image: AssetImage(
+                  'assets/water.jpg',
+                ),
+                fit: BoxFit.fill),
+          ),
+       
+  );
 
   Widget _buildWrap(context) => Wrap(
         runSpacing: 10,

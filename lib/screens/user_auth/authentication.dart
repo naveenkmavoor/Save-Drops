@@ -1,5 +1,4 @@
-
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:sed/models/auth.dart';
 import 'package:sed/models/main.dart';
 import 'dart:ui';
@@ -24,6 +23,11 @@ class _HomePagesState extends State<Authentication> {
       fontSize: 17,
       color: Colors.white);
   bool estatus = true, pstatus = true, cstatus = true, ustatus = true;
+  @override
+  void initState() {
+    print('authentication executed');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,101 +38,109 @@ class _HomePagesState extends State<Authentication> {
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.only(top: 30),
-            alignment: Alignment.center,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/blue.jpg'), fit: BoxFit.cover),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
-              child: Form(
-                key: _newkey,
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      'Save Drops',
-                      style: TextStyle(
-                        fontFamily: 'Angeline',
-                        fontSize: 50,
-                        height: 3,
-                      ),
-                    ),
-                    Text(
-                      _authMode == AuthMode.Signup ? 'SignUp' : "Login",
-                      style: TextStyle(
-                          height: 4,
-                          fontSize: 22,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w300),
-                    ),
-                    _authMode == AuthMode.Login
-                        ? Container()
-                        : _buildUsername(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _buildEmail(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _buildPassword(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _authMode == AuthMode.Signup
-                        ? _buildConfirmPassword()
-                        : Container(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _buildLogin(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).requestFocus(FocusNode()),  
+            child: Container(
+              padding: EdgeInsets.only(top: 30),
+              alignment: Alignment.center,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/blue.jpg'), fit: BoxFit.cover),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+                child: Form(
+                  key: _newkey,
+                  child: SingleChildScrollView(
+                    child: Column(
                       children: <Widget>[
-                        FlatButton(
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400),
+                        Text(
+                          'Save Drops',
+                          style: TextStyle(
+                            fontFamily: 'Angeline',
+                            fontSize: 50,
+                            height: 2,
                           ),
-                          onPressed: () {
-                            _passwordresetemail();
-                          },
                         ),
                         Text(
-                          "|",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
+                          _authMode == AuthMode.Signup ? 'SignUp' : "Login",
+                          style: TextStyle(
+                              height: 6,
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w300),
                         ),
-                        FlatButton(
-                          child: Text(
-                              _authMode == AuthMode.Login ? 'SignUp' : 'Login',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400)),
-                          onPressed: () {
-                            _newkey.currentState.reset();
-                            _controller.clear();
-                            estatus = true;
-                            pstatus = true;
-                            cstatus = true;
-                            ustatus = true;
-                            setState(() {
-                              _authMode = _authMode == AuthMode.Login
-                                  ? AuthMode.Signup
-                                  : AuthMode.Login;
-                            });
-                          },
+                        _authMode == AuthMode.Login
+                            ? Container()
+                            : _buildUsername(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _buildEmail(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _buildPassword(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _authMode == AuthMode.Signup
+                            ? _buildConfirmPassword()
+                            : Container(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _buildLogin(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            FlatButton(
+                              child: Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              onPressed: () {
+                                _passwordresetemail();
+                              },
+                            ),
+                            Text(
+                              "|",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                            FlatButton(
+                              child: Text(
+                                  _authMode == AuthMode.Login
+                                      ? 'SignUp'
+                                      : 'Login',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400)),
+                              onPressed: () {
+                                _newkey.currentState.reset();
+                                _controller.clear();
+                                estatus = true;
+                                pstatus = true;
+                                cstatus = true;
+                                ustatus = true;
+                                setState(() {
+                                  _authMode = _authMode == AuthMode.Login
+                                      ? AuthMode.Signup
+                                      : AuthMode.Login;
+                                });
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -313,9 +325,7 @@ class _HomePagesState extends State<Authentication> {
       setState(() {});
     }
 
-    if (successInformation['success']) {
-      Navigator.pushReplacementNamed(context, '/');
-    } else if (successInformation['message'] == 'sent') {
+    if (successInformation['message'] == 'sent') {
       model.verificationlinksend = true;
       model.email = userval['Email'];
       Navigator.pushReplacementNamed(context, '/resetpassword');

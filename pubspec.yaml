@@ -30,13 +30,10 @@ dependencies:
   http: 
   date_format:
   intl: 
-  collection: 
-  # flutter_webview_plugin:
+  collection:  
   curved_navigation_bar: 
   flutter_icons:
-  provider:
-  # flushbar:   
-  url_launcher:   
+  provider: 
   rxdart:
   data_connection_checker: 
   firebase_auth:  
