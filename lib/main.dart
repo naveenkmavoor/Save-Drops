@@ -18,11 +18,11 @@ import 'package:firebase_database/firebase_database.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FirebaseApp.configure(
-    name: 'db2',
+    name: 'DATABASE INSTANCE NAME',
     options: const FirebaseOptions(
-      googleAppID: '1:639561091305:android:69de08c2b6bd55dbd98878',
-      apiKey: 'AIzaSyCATpo1Jvz5cKGoVF7pR9xy-Pz2BuS-8T0',
-      databaseURL: 'https://sedapp-263e0.firebaseio.com',
+      googleAppID: 'APP ID',
+      apiKey: 'API KEY',
+      databaseURL: 'DB URL',
     ),
   );
   runApp(MyApp());
