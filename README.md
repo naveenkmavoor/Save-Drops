@@ -37,19 +37,4 @@ Learned about some ui/ux skills that needed for an app for better visual experie
 
 ## What's next for Save-Drops
 Need to add a feature that predicts the consumption of water that day, month and year using a machine learning model.
-The user can set the values for how much water need to be consumed in a day and when achieved the gives a reward notification to the user. Sign up page
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
- 
+The user can set the values for how much water need to be consumed in a day and when achieved the gives a reward notification to the user. 
