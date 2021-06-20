@@ -2,9 +2,9 @@
 # Save-Drop-App
 A smart water management application
 <p align="center">
-  <img src="app screenshots/2_login_screen.jpg" width="350" title="hover text">
-  <img src="app screenshots/3_home_screen.jpg" width="350" title= "home screen">
-  <img src="app screenshots/4_usage_screen.jpg" width="350" title="hover text">
+  <img src="app screenshots/2_login_screen.jpg" width="350" height="450" title="hover text">
+  <img src="app screenshots/3_home_screen.jpg" width="350" height="450" title= "home screen">
+  <img src="app screenshots/4_usage_screen.jpg" width="350" height="450" title="hover text">
 </p>
 
  
