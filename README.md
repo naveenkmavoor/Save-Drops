@@ -2,9 +2,9 @@
 # Save-Drop-App
 A smart water management application
 <p align="center">
-  <img src="app screenshots/2_login_screen.jpg" height="400em" title="hover text">
-  <img src="app screenshots/3_home_screen.jpg" height="400em" title= "home screen">
-  <img src="app screenshots/4_usage_screen.jpg" height="400em" title="hover text">
+  <img src="app screenshots/2_login_screen.jpg" height="450em" title="hover text">
+  <img src="app screenshots/3_home_screen.jpg" height="450em" title= "home screen">
+  <img src="app screenshots/4_usage_screen.jpg" height="450em" title="hover text">
 </p>
 
  
@@ -18,10 +18,10 @@ I really want to make an IoT App that can make an impact on our lives. I thought
 This app will track our day-to-day consumption of water in our household and alert us if we consume more that day. It comes with controlling the motor to pump water into the tank. The app notifies the user when the water level is low and the user can turn on the motor. The motor will shut down automatically when the water gets fully filled in the tank with the help of sensors attached so the user doesn't need to bother about turning off the motor. It shows the real-time water level in the tank and can calculate the water bill according to the consumption if required. Plot visual graph to show the statistics of water consumption on a daily, monthly, and yearly basis.
 
 ## How I built it
-This app is built using a cross-platform framework for the mobile applications named flutter and backend as a service API named firebase. The language used to run the microcontroller is c++ in Arduino IDE. 
+This app is built using a cross-platform framework for the mobile applications named Flutter and backend as a service API named Firebase. The language used to run the microcontroller is C++ in Arduino IDE. 
 
 ## Challenges I ran into
-The first challenge was that I'm building an IoT device for the first time so i struggled with the  esp8266 wifi module microcontroller quite a bit and wasn't sure I can able to set up the circuit connection and program codes for controlling the sensor properly then I get used to it by doing small programs like blinking led then slowly practiced on different sensors. 
+The first challenge was that I'm building an IoT device for the first time so i struggled with the esp8266 wifi module microcontroller quite a bit and wasn't sure I can able to set up the circuit connection and program codes for controlling the sensor properly then I get used to it by doing small programs like blinking led then slowly practiced on different sensors. 
 
 The second was with the user interface of the app. I don't know anything about the strategy of designing an app with tutorials I did some sample design apps and get into the dribble website and found out a matching design for our app. 
 
@@ -33,8 +33,8 @@ The fourth was the development of an algorithm that needs to automatically calcu
 The journey from the idea creation to building it is something that can be really proud of and one of my great accomplishment. 
 
 ## What I learned
-Learned about some UI/UX skills that needed for an app for the better visual experience, get to know more about flutter framework and Google firebase real-time database and Interfacing with Microcontroller esp8266 wifi module and sensors like flow meter, relay switch, Ultrasonic sensor and developed an algorithm for the proper functioning of sensors and interacting the app. 
+Proficient in UI/UX design for enhancing the visual experience of mobile applications, skilled in Flutter framework and Google Firebase real-time database integration, and experienced in interfacing with Microcontroller ESP8266 WiFi module and various sensors including flow meter, relay switch, and Ultrasonic sensor. Successfully developed an algorithm to ensure proper functioning of sensors and seamless interaction with the mobile application.
 
 ## What's next for Save-Drops
-Need to add a feature that predicts the consumption of water that day, month, and year using a machine learning model.
-The user can set the values for how much water needs to be consumed in a day and when achieved the gives a reward notification to the user.
+Refactor state management of the code base from ScopedModel to Bloc pattern.
+Implemented a machine learning-based feature that accurately predicts daily, monthly, and yearly water consumption in a mobile application. Users can set their desired daily water intake, and the app sends a reward notification upon achieving the goal.
