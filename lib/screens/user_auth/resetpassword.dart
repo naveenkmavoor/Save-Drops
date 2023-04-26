@@ -1,4 +1,4 @@
-import 'dart:ui'; 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sed/models/main.dart';
@@ -11,7 +11,7 @@ class ResetPassword extends StatefulWidget {
 }
 
 class _ResetPasswordState extends State<ResetPassword> {
-  GlobalKey<FormState> _formkey = GlobalKey<FormState>();  
+  GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   String email;
   bool sendlink = false;
   double newWidth;
@@ -102,7 +102,6 @@ class _ResetPasswordState extends State<ResetPassword> {
           'Email: $email',
           style: textstyle,
         ),
-        
       ]);
 
   Widget _buildNoLinkSend(deviceWidth) => Column(
@@ -188,8 +187,7 @@ class _ResetPasswordState extends State<ResetPassword> {
   Widget _buildButton() => ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
           return model.isLoading
-              ? CircularProgressIndicator( 
-                )
+              ? CircularProgressIndicator()
               : Material(
                   borderRadius: BorderRadius.circular(30),
                   color: Colors.transparent,
@@ -235,7 +233,7 @@ class _ResetPasswordState extends State<ResetPassword> {
         sendlink = true;
       });
     } else {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),
       ));
     }

@@ -40,7 +40,7 @@ class _HomeState extends State<Redirect> {
           return AlertDialog(
             backgroundColor: Colors.black,
             actions: <Widget>[
-              FlatButton(
+              ElevatedButton(
                 child: Text('Ok'),
                 onPressed: () {
                   Navigator.pop(context);
@@ -104,7 +104,7 @@ class _HomeState extends State<Redirect> {
           return AlertDialog(
             backgroundColor: Colors.black,
             actions: <Widget>[
-              FlatButton(
+              ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
                   _updateWaterCapacity();
@@ -114,7 +114,7 @@ class _HomeState extends State<Redirect> {
             ],
             title: Text('Hello there :)'),
             content: TextFormField(
-              inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+              inputFormatters: [],
               onChanged: (String value) {
                 tankCapacity = int.parse(value);
               },

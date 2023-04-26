@@ -152,7 +152,7 @@ class _AccountpageState extends State<Accountpage> {
             title: Text('Warning'),
             content: Text('Are you sure you want to delete this account?'),
             actions: <Widget>[
-              FlatButton(
+              ElevatedButton(
                 child: Text('Yes'),
                 onPressed: () {
                   Navigator.pop(context);
@@ -160,7 +160,7 @@ class _AccountpageState extends State<Accountpage> {
                   _model.deleteAccount();
                 },
               ),
-              FlatButton(
+              ElevatedButton(
                 child: Text('No'),
                 onPressed: () => Navigator.pop(context),
               )
@@ -306,7 +306,7 @@ class _AccountpageState extends State<Accountpage> {
         style: textstyle,
         textAlign: TextAlign.center,
         cursorColor: Colors.white,
-        validator: (String value) { 
+        validator: (String value) {
           if (_controller.text != value || _controller.text == '') {
             cstatus = false;
           } else {
@@ -371,12 +371,11 @@ class _AccountpageState extends State<Accountpage> {
         successInformation =
             await model.updateUserData(userval['name'], userval['Email']);
       else
-        successInformation = await model.updatePassword(
-             userval['Newpassword']);
+        successInformation = await model.updatePassword(userval['Newpassword']);
     } else {
       setState(() {});
     }
-    Scaffold.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(successInformation['message']),
       behavior: SnackBarBehavior.floating,
     ));

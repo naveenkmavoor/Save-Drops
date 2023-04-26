@@ -116,18 +116,19 @@ class _SettingsState extends State<Settings> {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(backgroundColor: Colors.black,
+          return AlertDialog(
+            backgroundColor: Colors.black,
             title: Text('Are you sure you want to clear history?'),
             content:
                 Text('Clearing history will permanently erase all your data.'),
             actions: <Widget>[
-              FlatButton(
+              ElevatedButton(
                   child: Text('Yes'),
                   onPressed: () {
                     widget.model.removeFromDatabase();
                     Navigator.pop(context);
                   }),
-              FlatButton(
+              ElevatedButton(
                 child: Text('No'),
                 onPressed: () => Navigator.pop(context),
               )

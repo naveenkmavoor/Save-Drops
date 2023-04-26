@@ -153,7 +153,7 @@ class _ShowpageState extends State<MotorStatus> {
                           _buildAnimate();
                           _addMotorstatus();
                         } else {
-                          Scaffold.of(context).showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               behavior: SnackBarBehavior.floating,
                               content: Text('No internet Connection.'),
@@ -224,7 +224,8 @@ class _ShowpageState extends State<MotorStatus> {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(backgroundColor: Colors.black,
+          return AlertDialog(
+            backgroundColor: Colors.black,
             title: Text('We got you covered :)'),
             content: Text('Motor will shutdown automatically. No worry'),
           );

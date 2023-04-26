@@ -39,7 +39,7 @@ class _HomePagesState extends State<Authentication> {
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: GestureDetector(
-            onTap: () => FocusScope.of(context).requestFocus(FocusNode()),  
+            onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
             child: Container(
               padding: EdgeInsets.only(top: 30),
               alignment: Alignment.center,
@@ -98,7 +98,7 @@ class _HomePagesState extends State<Authentication> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            FlatButton(
+                            ElevatedButton(
                               child: Text(
                                 'Forgot Password?',
                                 style: TextStyle(
@@ -114,7 +114,7 @@ class _HomePagesState extends State<Authentication> {
                               style:
                                   TextStyle(color: Colors.white, fontSize: 20),
                             ),
-                            FlatButton(
+                            ElevatedButton(
                               child: Text(
                                   _authMode == AuthMode.Login
                                       ? 'SignUp'
@@ -330,7 +330,7 @@ class _HomePagesState extends State<Authentication> {
       model.email = userval['Email'];
       Navigator.pushReplacementNamed(context, '/resetpassword');
     } else {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         behavior: SnackBarBehavior.floating,
         content: Text(successInformation['message']),
       ));
